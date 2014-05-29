@@ -75,36 +75,41 @@ if((my $size = @variables) != 3){
     die "Invalid file name, not enough information";   
 }
 
+#set the output file name
 my $dest = "$variables[0]_output\.pgm";
 
-
+#open the targetted file
 open(TEST, $file) or die "Can't open file \n";
-binmode(TEST);
+binmode(TEST);	#binary mode
 
 local $/; #slurp mode
 my @data;
 #set the mode according to the hilo or lohi
 if($arr eq "hilo"){
-	@data = unpack 's>*', <TEST>;
+	@data = unpack 's>*', <TEST>; #big endian
 }else{
-	@data = unpack 's<*', <TEST>;
+	@data = unpack 's<*', <TEST>; #small endian
 }
 
 close(TEST);
 
+#open/create new file to write in
 unless (open FILE, '>'.$dest) {
 	die "unable to create $dest\n"
 }
 
-binmode(FILE);
+binmode(FILE);	#binary mode
 
-my $length = @data;
+my $length = @data;	#array length
+#declare the header for pgm
 print FILE "P5\n";
 print FILE "$variables[2]\n";
 print FILE "$variables[1]\n";
+#check whether the one_byte toggled or not
 if($one_byte == 1){
 	print FILE "255\n";
 	for(my $i = 0; $i < $length; $i++){
+		#scale the value from 0 - 65535 to 0 - 255;
 		my $scale = ceil(($data[$i]/65535) * 255);
 		print FILE pack("S", $scale);
 		#print "$scale\n";
