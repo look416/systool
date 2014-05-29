@@ -31,8 +31,14 @@ if((my $size = @variables) != 3){
 
 my $dest = "$variables[0]_output\.pgm";
 
-#my $total = $2 * $3;
-#my $line = `/usr/bin/tail --bytes=$total $file`;
+my $total = $variables[2] * $variables[1];
+chomp($file);
+my $size = -s $file;
+#print "$size\n";
+
+if($size != $total){
+	die "Invalid file size.";
+}
 
 #read the img and store it into the variable
 open(TEST, $file) or die "Can't open file \n";

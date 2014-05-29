@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use POSIX;
 
 my $one_byte = 0;
 my $arr = "hilo";
@@ -69,12 +70,55 @@ if($words[1] ne "smg"){
 
 my @variables = split'_', $words[0];
 
-open(TEST, $file) or die "Can't open file \n";
+#check whether the filename consist of enough information
+if((my $size = @variables) != 3){
+    die "Invalid file name, not enough information";   
+}
 
+my $dest = "$variables[0]_output\.pgm";
+
+
+open(TEST, $file) or die "Can't open file \n";
 binmode(TEST);
 
-my $data = <TEST>;
+local $/; #slurp mode
+my @data;
+#set the mode according to the hilo or lohi
+if($arr eq "hilo"){
+	@data = unpack 's>*', <TEST>;
+}else{
+	@data = unpack 's<*', <TEST>;
+}
 
 close(TEST);
 
-print $data;
+unless (open FILE, '>'.$dest) {
+	die "unable to create $dest\n"
+}
+
+binmode(FILE);
+
+my $length = @data;
+print FILE "P5\n";
+print FILE "$variables[2]\n";
+print FILE "$variables[1]\n";
+if($one_byte == 1){
+	print FILE "255\n";
+	for(my $i = 0; $i < $length; $i++){
+		my $scale = ceil(($data[$i]/65535) * 255);
+		print FILE pack("S", $scale);
+		#print "$scale\n";
+	}
+}else{
+	print FILE "65535\n";
+	for(my $i = 0; $i < $length; $i++){
+		print FILE pack("S", $data[$i]);
+	}
+}
+
+
+
+
+close(FILE);
+
+#print $data;
