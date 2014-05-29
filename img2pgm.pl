@@ -15,20 +15,43 @@ my @words = split '\.', $file;
 if(! defined $words[1]){
 	die "Invalid file type/extension";
 }
-print $words[1];
+#print $words[1];
 chomp($words[1]);
 if($words[1] ne "img"){
 	die "Invalid file type/extension";
 }
 
 my @variables = split'_', $words[0];
-print "@variables\n";
+#print "@variables\n";
 
-#my $dest = "$words[0]_$3_$2\.img";
+#check whether the filename consist of enough information
+if((my $size = @variables) != 3){
+    die "Invalid file name, not enough information";   
+}
+
+my $dest = "$variables[0]_output\.pgm";
 
 #my $total = $2 * $3;
 #my $line = `/usr/bin/tail --bytes=$total $file`;
 
+#read the img and store it into the variable
+open(TEST, $file) or die "Can't open file \n";
 
+#set the handler to be in binary mode
+binmode(TEST);
 
-#open(TEST, $file) or die "Can't open file \n";
+$/ = undef;
+my $data = <TEST>;
+close(TEST);
+
+#write the img file into pgm
+unless (open FILE, '>'.$dest) {
+	die "unable to create $dest\n"
+}
+
+print FILE "P5\n";
+print FILE "$variables[2]\n";
+print FILE "$variables[1]\n";
+print FILE "255\n";
+print FILE $data;
+close FILE;
