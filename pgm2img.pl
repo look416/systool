@@ -2,10 +2,15 @@
 use strict;
 use warnings;
 
-#user input the file name
-print "Please enter the pgm file name: \n";
-my $file = <STDIN>;
+#validate the number of arguments
+my $num_args = $#ARGV + 1;
+if ($num_args != 1){
+	print "\nUsage: pgm2img.pl file_name\n";
+	exit;
+}
 
+#user input the file name
+my $file = $ARGV[0];
 #do some validations and create the output file name
 
 #print $file;

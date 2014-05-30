@@ -2,9 +2,15 @@
 use strict;
 use warnings;
 
+#validate the number of arguments
+my $num_args = $#ARGV + 1;
+if ($num_args != 1){
+	print "\nUsage: img2pgm.pl file_name\n";
+	exit;
+}
+
 #user input the file name
-print "Please enter the pgm file name: \n";
-my $file = <STDIN>;
+my $file = $ARGV[0];
 #open the file using the user input
 
 
